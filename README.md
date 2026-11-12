@@ -63,7 +63,7 @@ A [Home Assistant](https://www.home-assistant.io/) Lovelace card that summarises
 
 ### 1. Create the F1 sensors
 
-The card reads its data from four [RESTful sensors](https://www.home-assistant.io/integrations/sensor.rest/). Home Assistant fetches the API once an hour and every dashboard shares the result.
+The card reads its data from four [RESTful sensors](https://www.home-assistant.io/integrations/sensor.rest/). Home Assistant fetches the API every few hours and every dashboard shares the result.
 
 1. Copy [`examples/f1-sensors.yaml`](examples/f1-sensors.yaml) into a [package](https://www.home-assistant.io/docs/configuration/packages/), or paste its `rest:` block into `configuration.yaml`.
 2. Restart Home Assistant.
@@ -71,6 +71,44 @@ The card reads its data from four [RESTful sensors](https://www.home-assistant.i
 
 > [!TIP]
 > These sensors have large attributes (full results, standings and schedule). Exclude them from the recorder, as shown at the end of the example file, to keep your database small and avoid a warning in the logs.
+
+#### Refresh intervals
+
+The example file refreshes the sensors slowly on purpose:
+
+| Sensor                       | `scan_interval` | Why                                                                            |
+| ---------------------------- | --------------- | ------------------------------------------------------------------------------ |
+| `sensor.f1_next_race`        | `21600` (6 h)   | The next race and its session times only change once per Grand Prix weekend.   |
+| `sensor.f1_last_results`     | `21600` (6 h)   | Results change once per race, a few hours after the finish.                    |
+| `sensor.f1_driver_standings` | `21600` (6 h)   | Standings change after a sprint or a Grand Prix only.                          |
+| `sensor.f1_schedule`         | `86400` (24 h)  | The season calendar almost never changes. It is only used for the title fight. |
+
+Earlier versions refreshed every hour (every 6 hours for the schedule). It worked, but most of these requests returned the same data:
+
+- **Fewer requests to Jolpica.** The API is free, run by volunteers and limited to about 500 requests per hour. It is shared by every user, so polling it more than needed is not polite.
+- **Less work for Home Assistant.** These sensors carry large attributes: every refresh parses several kB of JSON, and writes a new state if the recorder is not excluded.
+- **No visible impact on the card.** Countdowns and live sessions are computed in the browser from the session times, and refreshed every minute by the card itself (`update_interval`). They do not depend on how often the sensors are polled.
+
+The only drawback: results and standings can show up to 6 hours after Jolpica publishes them. If you want them sooner on race days, refresh them yourself, for example with this automation:
+
+```yaml
+automation:
+  - alias: Refresh F1 results on race weekends
+    triggers:
+      - trigger: time_pattern
+        minutes: 0
+    conditions:
+      - condition: time
+        weekday: [sat, sun, mon]
+    actions:
+      - action: homeassistant.update_entity
+        target:
+          entity_id:
+            - sensor.f1_last_results
+            - sensor.f1_driver_standings
+```
+
+You can of course set any `scan_interval` you like; the card works the same.
 
 ### 2. Install the card
 
@@ -211,7 +249,7 @@ Race and circuit names come from the API, in English. To add a language, see [CO
 
 **The flags show as two letters (US, BR…)**: Windows does not include flag emojis. This is a limitation of the operating system, not of the card.
 
-**The data is late after a race**: the sensors refresh once an hour, and Jolpica publishes the results a little while after the race. You can refresh a sensor right away with the `homeassistant.update_entity` action.
+**The data is late after a race**: the sensors refresh every 6 hours, and Jolpica publishes the results a little while after the race. You can refresh a sensor right away with the `homeassistant.update_entity` action, or automate it, see [Refresh intervals](#refresh-intervals).
 
 **A session is shown at the wrong time**: times are converted to the time zone of your Home Assistant profile (**Profile → Time zone**: browser or server).
 

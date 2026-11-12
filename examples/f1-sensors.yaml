@@ -1,8 +1,12 @@
 # Formula 1 sensors for the Formula One Summary Card.
 #
 # Data comes from the free Jolpica API (https://github.com/jolpica/jolpica-f1),
-# the successor of the Ergast API. Jolpica allows about 500 requests per hour:
-# one request per hour and per sensor is far below that.
+# the successor of the Ergast API, free and limited to about 500 requests per hour.
+#
+# The data changes at most a few times per race weekend, so the sensors refresh
+# every 6 hours (every 24 hours for the calendar). Countdowns and live sessions
+# do not depend on it: the card computes them itself every minute. See
+# "Refresh intervals" in the README to get results faster on race days.
 #
 # Put this file in a package (recommended), or paste the `rest:` block into
 # configuration.yaml, then restart Home Assistant.
@@ -10,7 +14,7 @@
 rest:
   # Next Grand Prix and the times of all its sessions.
   - resource: https://api.jolpi.ca/ergast/f1/current/next.json
-    scan_interval: 3600
+    scan_interval: 21600
     sensor:
       - name: F1 Next Race
         unique_id: f1_next_race
@@ -36,7 +40,7 @@ rest:
 
   # Results of the last race.
   - resource: https://api.jolpi.ca/ergast/f1/current/last/results.json
-    scan_interval: 3600
+    scan_interval: 21600
     sensor:
       - name: F1 Last Results
         unique_id: f1_last_results
@@ -56,7 +60,7 @@ rest:
 
   # Drivers' championship standings.
   - resource: https://api.jolpi.ca/ergast/f1/current/driverStandings.json
-    scan_interval: 3600
+    scan_interval: 21600
     sensor:
       - name: F1 Driver Standings
         unique_id: f1_driver_standings
@@ -72,7 +76,7 @@ rest:
 
   # Full season schedule, used to compute the title fight.
   - resource: https://api.jolpi.ca/ergast/f1/current.json
-    scan_interval: 21600
+    scan_interval: 86400
     sensor:
       - name: F1 Schedule
         unique_id: f1_schedule
