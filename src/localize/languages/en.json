@@ -1,0 +1,113 @@
+{
+  "header": {
+    "title": "FORMULA 1",
+    "round": "Round {round}"
+  },
+  "mode": {
+    "week": "Next Grand Prix",
+    "weekend": "Race weekend",
+    "results": "Results",
+    "off": "Off-season",
+    "clinched": "Title decided"
+  },
+  "session": {
+    "fp1": "Practice 1",
+    "fp2": "Practice 2",
+    "fp3": "Practice 3",
+    "sprint_qualifying": "Sprint qualifying",
+    "sprint": "Sprint",
+    "qualifying": "Qualifying",
+    "race": "Race"
+  },
+  "status": {
+    "done": "Finished",
+    "live": "Live",
+    "next": "in {time}"
+  },
+  "countdown": {
+    "days": "{days}d {hours}h",
+    "hours": "{hours}h {minutes}",
+    "minutes": "{minutes} min"
+  },
+  "week": {
+    "race_start": "Race start",
+    "first_session": "First session:"
+  },
+  "weekend": {
+    "schedule": "Schedule"
+  },
+  "results": {
+    "last_grand_prix": "Last Grand Prix",
+    "fastest_lap": "Fastest lap",
+    "biggest_gain": "Biggest climb",
+    "places_one": "+{count} place",
+    "places_other": "+{count} places",
+    "retirements": "Retirements",
+    "none": "None",
+    "next": "Next:",
+    "in": "in {time}"
+  },
+  "standings": {
+    "title": "Drivers' championship",
+    "after_round": "after round {round}"
+  },
+  "title_fight": {
+    "title": "Title fight",
+    "points_left": "points still available",
+    "races_one": "{count} Grand Prix",
+    "races_other": "{count} Grands Prix",
+    "sprints_one": "{count} sprint",
+    "sprints_other": "{count} sprints",
+    "contenders": "Still in contention:",
+    "match_point": "{name} can clinch the title at the {race} with a lead of at least {points} points after the weekend",
+    "clinched": "{name} is world champion!",
+    "clinched_detail": "{lead} points ahead with only {points} left to play for"
+  },
+  "off": {
+    "season_over": "Season {season} is over",
+    "season_over_unknown": "Season over",
+    "points": "{points} points",
+    "last_race": "Last race:",
+    "won_by": "won by {name}"
+  },
+  "warning": {
+    "entity_not_found": "Entity not found: {entity}. Create the F1 sensors first, see the documentation."
+  },
+  "editor": {
+    "next_race_entity": {
+      "label": "Next race sensor",
+      "helper": "Jolpica /current/next.json sensor, see the documentation."
+    },
+    "last_results_entity": { "label": "Last results sensor" },
+    "standings_entity": { "label": "Driver standings sensor" },
+    "schedule_entity": {
+      "label": "Season schedule sensor",
+      "helper": "Used to compute the title fight."
+    },
+    "entities": { "label": "Sensors" },
+    "mode": {
+      "label": "Layout",
+      "helper": "Automatic follows the calendar. The other choices force a layout, useful to test the card."
+    },
+    "mode_options": {
+      "auto": "Automatic",
+      "week": "Next Grand Prix",
+      "weekend": "Race weekend",
+      "results": "Results",
+      "off": "Off-season"
+    },
+    "show_title_fight": { "label": "Title fight" },
+    "show_standings": { "label": "Championship standings" },
+    "standings_rows": {
+      "label": "Drivers in the standings",
+      "helper": "Leave empty for automatic (3 or 5 depending on the layout)."
+    },
+    "update_interval": {
+      "label": "Refresh interval",
+      "helper": "How often countdowns and live sessions are refreshed, in seconds."
+    },
+    "interactions": { "label": "Interactions" },
+    "tap_action": { "label": "Tap action" },
+    "hold_action": { "label": "Hold action" }
+  }
+}

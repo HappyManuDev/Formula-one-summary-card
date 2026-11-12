@@ -1,0 +1,6 @@
+{
+  "name": "Formula One Summary Card",
+  "render_readme": true,
+  "filename": "formula-one-summary-card.js",
+  "homeassistant": "2024.8.0"
+}

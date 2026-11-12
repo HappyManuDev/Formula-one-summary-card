@@ -1,0 +1,96 @@
+# Formula 1 sensors for the Formula One Summary Card.
+#
+# Data comes from the free Jolpica API (https://github.com/jolpica/jolpica-f1),
+# the successor of the Ergast API. Jolpica allows about 500 requests per hour:
+# one request per hour and per sensor is far below that.
+#
+# Put this file in a package (recommended), or paste the `rest:` block into
+# configuration.yaml, then restart Home Assistant.
+
+rest:
+  # Next Grand Prix and the times of all its sessions.
+  - resource: https://api.jolpi.ca/ergast/f1/current/next.json
+    scan_interval: 3600
+    sensor:
+      - name: F1 Next Race
+        unique_id: f1_next_race
+        icon: mdi:flag-checkered
+        value_template: >
+          {% set r = value_json.MRData.RaceTable.Races %}
+          {{ r[0].raceName if r | count > 0 else 'Off-season' }}
+        json_attributes_path: '$.MRData.RaceTable.Races[0]'
+        json_attributes:
+          - season
+          - round
+          - raceName
+          - Circuit
+          - date
+          - time
+          - FirstPractice
+          - SecondPractice
+          - ThirdPractice
+          - Qualifying
+          - Sprint
+          - SprintQualifying
+          - SprintShootout
+
+  # Results of the last race.
+  - resource: https://api.jolpi.ca/ergast/f1/current/last/results.json
+    scan_interval: 3600
+    sensor:
+      - name: F1 Last Results
+        unique_id: f1_last_results
+        icon: mdi:podium
+        value_template: >
+          {% set r = value_json.MRData.RaceTable.Races %}
+          {{ r[0].Results[0].Driver.familyName if r | count > 0 else 'unknown' }}
+        json_attributes_path: '$.MRData.RaceTable.Races[0]'
+        json_attributes:
+          - season
+          - round
+          - raceName
+          - Circuit
+          - date
+          - time
+          - Results
+
+  # Drivers' championship standings.
+  - resource: https://api.jolpi.ca/ergast/f1/current/driverStandings.json
+    scan_interval: 3600
+    sensor:
+      - name: F1 Driver Standings
+        unique_id: f1_driver_standings
+        icon: mdi:trophy
+        value_template: >
+          {% set s = value_json.MRData.StandingsTable.StandingsLists %}
+          {{ s[0].DriverStandings[0].Driver.familyName if s | count > 0 else 'unknown' }}
+        json_attributes_path: '$.MRData.StandingsTable.StandingsLists[0]'
+        json_attributes:
+          - season
+          - round
+          - DriverStandings
+
+  # Full season schedule, used to compute the title fight.
+  - resource: https://api.jolpi.ca/ergast/f1/current.json
+    scan_interval: 21600
+    sensor:
+      - name: F1 Schedule
+        unique_id: f1_schedule
+        icon: mdi:calendar-month
+        value_template: '{{ value_json.MRData.RaceTable.Races | count }}'
+        json_attributes_path: '$.MRData.RaceTable'
+        json_attributes:
+          - season
+          - Races
+
+# Results, standings and schedule exceed the 16 kB attribute limit of the recorder.
+# It is only a warning in the logs. To avoid it, and to keep these large attributes
+# out of your database, add this to configuration.yaml:
+#
+# recorder:
+#   exclude:
+#     entities:
+#       - sensor.f1_next_race
+#       - sensor.f1_last_results
+#       - sensor.f1_driver_standings
+#       - sensor.f1_schedule

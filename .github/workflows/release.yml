@@ -1,0 +1,56 @@
+name: Release
+
+# release-please keeps a "chore: release x.y.z" pull request up to date from the
+# Conventional Commits on main. Merging it creates the tag and the GitHub release,
+# then this workflow builds the card and attaches formula-one-summary-card.js for HACS.
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  upload:
+    name: Build and attach the card
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # The write token must not stay on disk while npm ci runs dependency scripts;
+      # gh gets it from GH_TOKEN in the upload step only.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          persist-credentials: false
+
+      # No npm cache here: a cache written by another run must not feed a release build.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Attach formula-one-summary-card.js to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ needs.release-please.outputs.tag_name }}" dist/formula-one-summary-card.js --clobber

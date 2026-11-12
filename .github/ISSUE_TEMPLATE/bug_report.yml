@@ -1,0 +1,55 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a bug! Please fill in the details below.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: card-version
+    attributes:
+      label: Card version
+      description: Shown in the browser console (F12) as `FORMULA ONE SUMMARY CARD vX.Y.Z`.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      placeholder: '2026.10.1'
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / app
+      placeholder: Chrome 140 on Windows, Companion app on Android…
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Card configuration
+      description: Your card YAML. Remove anything personal.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Browser console errors
+      description: Errors shown in the browser console (F12), if any.
+      render: text
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag and drop images here.

@@ -1,0 +1,113 @@
+{
+  "header": {
+    "title": "FORMULE 1",
+    "round": "Manche {round}"
+  },
+  "mode": {
+    "week": "Prochain GP",
+    "weekend": "Week-end de course",
+    "results": "Résultats",
+    "off": "Intersaison",
+    "clinched": "Titre joué"
+  },
+  "session": {
+    "fp1": "EL1",
+    "fp2": "EL2",
+    "fp3": "EL3",
+    "sprint_qualifying": "Qualifs sprint",
+    "sprint": "Sprint",
+    "qualifying": "Qualifs",
+    "race": "Course"
+  },
+  "status": {
+    "done": "Terminée",
+    "live": "En cours",
+    "next": "dans {time}"
+  },
+  "countdown": {
+    "days": "{days} j {hours} h",
+    "hours": "{hours} h {minutes}",
+    "minutes": "{minutes} min"
+  },
+  "week": {
+    "race_start": "Départ de la course",
+    "first_session": "Première session :"
+  },
+  "weekend": {
+    "schedule": "Programme"
+  },
+  "results": {
+    "last_grand_prix": "Dernier GP",
+    "fastest_lap": "Meilleur tour",
+    "biggest_gain": "Remontée",
+    "places_one": "+{count} place",
+    "places_other": "+{count} places",
+    "retirements": "Abandons",
+    "none": "Aucun",
+    "next": "Prochain :",
+    "in": "dans {time}"
+  },
+  "standings": {
+    "title": "Championnat pilotes",
+    "after_round": "après manche {round}"
+  },
+  "title_fight": {
+    "title": "Lutte pour le titre",
+    "points_left": "points encore en jeu",
+    "races_one": "{count} GP",
+    "races_other": "{count} GP",
+    "sprints_one": "{count} sprint",
+    "sprints_other": "{count} sprints",
+    "contenders": "Encore en course :",
+    "match_point": "Titre possible pour {name} dès le {race} avec au moins {points} points d'avance à l'issue du week-end",
+    "clinched": "{name}, champion du monde !",
+    "clinched_detail": "{lead} points d'avance, il n'en reste que {points} en jeu"
+  },
+  "off": {
+    "season_over": "Saison {season} terminée",
+    "season_over_unknown": "Saison terminée",
+    "points": "{points} points",
+    "last_race": "Dernière course :",
+    "won_by": "victoire de {name}"
+  },
+  "warning": {
+    "entity_not_found": "Entité introuvable : {entity}. Crée d'abord les capteurs F1, voir la documentation."
+  },
+  "editor": {
+    "next_race_entity": {
+      "label": "Capteur prochaine course",
+      "helper": "Capteur Jolpica /current/next.json, voir la documentation."
+    },
+    "last_results_entity": { "label": "Capteur derniers résultats" },
+    "standings_entity": { "label": "Capteur classement pilotes" },
+    "schedule_entity": {
+      "label": "Capteur calendrier de la saison",
+      "helper": "Sert au calcul de la lutte pour le titre."
+    },
+    "entities": { "label": "Capteurs" },
+    "mode": {
+      "label": "Affichage",
+      "helper": "Automatique suit le calendrier. Les autres choix forcent un affichage, pratique pour tester la carte."
+    },
+    "mode_options": {
+      "auto": "Automatique",
+      "week": "Prochain GP",
+      "weekend": "Week-end de course",
+      "results": "Résultats",
+      "off": "Intersaison"
+    },
+    "show_title_fight": { "label": "Lutte pour le titre" },
+    "show_standings": { "label": "Classement du championnat" },
+    "standings_rows": {
+      "label": "Pilotes au classement",
+      "helper": "Laisser vide pour le mode automatique (3 ou 5 selon l'affichage)."
+    },
+    "update_interval": {
+      "label": "Intervalle de rafraîchissement",
+      "helper": "Fréquence de mise à jour des comptes à rebours et des sessions en cours, en secondes."
+    },
+    "interactions": { "label": "Interactions" },
+    "tap_action": { "label": "Action au clic" },
+    "hold_action": { "label": "Action en appui long" }
+  }
+}
