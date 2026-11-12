@@ -1,11 +1,8 @@
 name: HACS validation
 
+# Manual only for now: the card is not submitted to HACS yet. To validate it on every
+# push again, add back push / pull_request / schedule triggers.
 on:
-  push:
-    branches: [main]
-  pull_request:
-  schedule:
-    - cron: '0 4 * * 1'
   workflow_dispatch:
 
 permissions:
