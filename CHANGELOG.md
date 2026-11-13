@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.1.2...v0.2.0) (2026-11-13)
+
+
+### Features
+
+* add spoiler protection to hide race results until you tap the card ([bed6f23](https://github.com/HappyManuDev/Formula-one-summary-card/commit/bed6f2324c8f84ba1d614b39ea2706fb3bd146d6))
+
 ## [0.1.2](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.1.1...v0.1.2) (2026-11-13)
 
 
