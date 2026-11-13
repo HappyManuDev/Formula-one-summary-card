@@ -6,6 +6,11 @@ updates:
       interval: monthly
     commit-message:
       prefix: build
+    ignore:
+      # typescript-eslint pins a TypeScript range; a new major breaks npm ci
+      # until typescript-eslint supports it. Upgrade both together by hand.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         dependency-type: development
