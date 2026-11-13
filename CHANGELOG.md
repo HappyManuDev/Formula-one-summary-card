@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.1.1...v0.1.2) (2026-11-13)
+
+
+### Bug Fixes
+
+* keep the card compact whatever the theme ([4db3304](https://github.com/HappyManuDev/Formula-one-summary-card/commit/4db3304bcd3ca8d999cbbf4d2bfb279fde6128a4))
+
 ## [0.1.1](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.1.0...v0.1.1) (2026-11-13)
 
 
