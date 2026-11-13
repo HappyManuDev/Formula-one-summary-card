@@ -119,6 +119,65 @@ describe('card', () => {
     expect(root.querySelectorAll('.row.standing')).toHaveLength(10);
   });
 
+  describe('spoiler protection', () => {
+    const SPOILER = { spoiler_protection: true };
+    const afterRace = new Date(LAST_RACE_START.getTime() + 3 * HOUR);
+
+    afterEach(() => localStorage.clear());
+
+    it('is off by default', async () => {
+      const { root } = await renderCard(makeHass(), afterRace);
+      expect(root.querySelector('.spoiler')).toBeNull();
+    });
+
+    it('blurs the results and hides the title fight', async () => {
+      const { text, root } = await renderCard(makeHass(), afterRace, SPOILER);
+      expect(root.querySelector('.spoiler.hidden .podium')).not.toBeNull();
+      expect(root.querySelector('.spoiler-content')?.getAttribute('aria-hidden')).toBe('true');
+      expect(root.querySelector('.champion')).toBeNull();
+      expect(root.querySelector('.tag')?.textContent).toContain('Résultats');
+      expect(text).toContain('Brazilian Grand Prix');
+      expect(text).toContain('Résultats masqués');
+      expect(text).toContain('Affichés automatiquement dans 5 h 00');
+    });
+
+    it('reveals the results on tap and remembers it for that race', async () => {
+      const { card, root } = await renderCard(makeHass(), afterRace, SPOILER);
+      (root.querySelector('.veil') as HTMLButtonElement).click();
+      await card.updateComplete;
+      expect(root.querySelector('.spoiler.hidden')).toBeNull();
+      expect(root.querySelector('.champion')).not.toBeNull();
+
+      document.body.innerHTML = '';
+      const again = await renderCard(makeHass(), afterRace, SPOILER);
+      expect(again.root.querySelector('.spoiler.hidden')).toBeNull();
+    });
+
+    it('does not trigger the tap action when revealing', async () => {
+      const { card, root } = await renderCard(makeHass(), afterRace, {
+        ...SPOILER,
+        tap_action: { action: 'more-info' },
+      });
+      const actions: Event[] = [];
+      card.addEventListener('hass-action', (event) => actions.push(event));
+      const veil = root.querySelector('.veil') as HTMLButtonElement;
+      veil.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
+      veil.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, composed: true }));
+      veil.click();
+      expect(actions).toHaveLength(0);
+    });
+
+    it('shows the results by themselves after the delay', async () => {
+      const { root } = await renderCard(
+        makeHass(),
+        new Date(LAST_RACE_START.getTime() + 9 * HOUR),
+        SPOILER,
+      );
+      expect(root.querySelector('.spoiler')).toBeNull();
+      expect(root.querySelector('.champion')).not.toBeNull();
+    });
+  });
+
   it('only re-renders for its own sensors', async () => {
     const hass = makeHass();
     const { card } = await renderCard(hass, LAST_RACE_START);

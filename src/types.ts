@@ -14,6 +14,8 @@ export interface FormulaOneSummaryCardConfig extends LovelaceCardConfig {
   show_standings?: boolean;
   standings_rows?: number;
   update_interval?: number;
+  spoiler_protection?: boolean;
+  spoiler_hours?: number;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
 }
@@ -31,6 +33,8 @@ export type ResolvedConfig = FormulaOneSummaryCardConfig &
       | 'show_title_fight'
       | 'show_standings'
       | 'update_interval'
+      | 'spoiler_protection'
+      | 'spoiler_hours'
       | 'tap_action'
       | 'hold_action'
     >

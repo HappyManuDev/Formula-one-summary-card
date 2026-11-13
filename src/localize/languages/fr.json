@@ -70,6 +70,11 @@
     "last_race": "Dernière course :",
     "won_by": "victoire de {name}"
   },
+  "spoiler": {
+    "title": "Résultats masqués",
+    "reveal": "Toucher pour afficher",
+    "auto": "Affichés automatiquement dans {time}"
+  },
   "warning": {
     "entity_not_found": "Entité introuvable : {entity}. Crée d'abord les capteurs F1, voir la documentation."
   },
@@ -78,13 +83,19 @@
       "label": "Capteur prochaine course",
       "helper": "Capteur Jolpica /current/next.json, voir la documentation."
     },
-    "last_results_entity": { "label": "Capteur derniers résultats" },
-    "standings_entity": { "label": "Capteur classement pilotes" },
+    "last_results_entity": {
+      "label": "Capteur derniers résultats"
+    },
+    "standings_entity": {
+      "label": "Capteur classement pilotes"
+    },
     "schedule_entity": {
       "label": "Capteur calendrier de la saison",
       "helper": "Sert au calcul de la lutte pour le titre."
     },
-    "entities": { "label": "Capteurs" },
+    "entities": {
+      "label": "Capteurs"
+    },
     "mode": {
       "label": "Affichage",
       "helper": "Automatique suit le calendrier. Les autres choix forcent un affichage, pratique pour tester la carte."
@@ -96,8 +107,12 @@
       "results": "Résultats",
       "off": "Intersaison"
     },
-    "show_title_fight": { "label": "Lutte pour le titre" },
-    "show_standings": { "label": "Classement du championnat" },
+    "show_title_fight": {
+      "label": "Lutte pour le titre"
+    },
+    "show_standings": {
+      "label": "Classement du championnat"
+    },
     "standings_rows": {
       "label": "Pilotes au classement",
       "helper": "Laisser vide pour le mode automatique (3 ou 5 selon l'affichage)."
@@ -106,8 +121,25 @@
       "label": "Intervalle de rafraîchissement",
       "helper": "Fréquence de mise à jour des comptes à rebours et des sessions en cours, en secondes."
     },
-    "interactions": { "label": "Interactions" },
-    "tap_action": { "label": "Action au clic" },
-    "hold_action": { "label": "Action en appui long" }
+    "spoilers": {
+      "label": "Anti-spoiler"
+    },
+    "spoiler_protection": {
+      "label": "Masquer les résultats après une course",
+      "helper": "Floute les résultats, le classement et la lutte pour le titre jusqu'à ce que tu touches la carte. Pratique quand tu regardes la course en différé."
+    },
+    "spoiler_hours": {
+      "label": "Afficher les résultats automatiquement après",
+      "helper": "Heures après la fin de la course (estimée 2 heures après le départ)."
+    },
+    "interactions": {
+      "label": "Interactions"
+    },
+    "tap_action": {
+      "label": "Action au clic"
+    },
+    "hold_action": {
+      "label": "Action en appui long"
+    }
   }
 }

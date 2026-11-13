@@ -27,6 +27,7 @@ A [Home Assistant](https://www.home-assistant.io/) Lovelace card that summarises
 - [Configuration](#configuration)
 - [Layouts](#layouts)
 - [Title fight](#title-fight)
+- [Spoiler protection](#spoiler-protection)
 - [Styling](#styling)
 - [Localization](#localization)
 - [Troubleshooting / FAQ](#troubleshooting--faq)
@@ -44,11 +45,12 @@ A [Home Assistant](https://www.home-assistant.io/) Lovelace card that summarises
 - 🔴 **Live schedule**: during the weekend, every session (practice, sprint, qualifying, race) is shown as finished, live, or with its countdown.
 - 🏆 **Podium and highlights**: top three with team colors, fastest lap, biggest climb from the grid, retirements.
 - 🧮 **Title fight**: points still available, drivers still in contention, match point at the next event and clinched title, with the 2026 points system.
+- 🙈 **Spoiler protection**: watching the race later? The results stay blurred until you tap the card, or for a delay you choose.
 - 📊 **Championship standings**: with team colors and gap to the leader.
 - 🕐 **Respects your profile**: dates and times follow your Home Assistant language, 12 h / 24 h clock and time zone.
 - 🌍 **Localized**: English and French.
 - 🖱️ **Visual editor**: every option can be set without writing YAML.
-- ⚡ **Lightweight**: about 17 kB gzipped, re-renders only when the F1 sensors change.
+- ⚡ **Lightweight**: about 19 kB gzipped, re-renders only when the F1 sensors change.
 
 ---
 
@@ -152,6 +154,8 @@ show_title_fight: true
 show_standings: true
 standings_rows: 10
 update_interval: 60
+spoiler_protection: true
+spoiler_hours: 6
 next_race_entity: sensor.f1_next_race
 last_results_entity: sensor.f1_last_results
 standings_entity: sensor.f1_driver_standings
@@ -163,20 +167,22 @@ tap_action:
 
 ### Options
 
-| Option                | Type                                                        | Default                      | Description                                                                                   |
-| --------------------- | ----------------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
-| `type`                | string                                                      | **required**                 | `custom:formula-one-summary-card`                                                             |
-| `mode`                | `auto` \| `week` \| `weekend` \| `results` \| `off`         | `auto`                       | Layout. `auto` follows the calendar, the other values force a layout (handy for testing).     |
-| `show_title_fight`    | boolean                                                     | `true`                       | Show the [title fight](#title-fight) block.                                                   |
-| `show_standings`      | boolean                                                     | `true`                       | Show the drivers' championship standings.                                                     |
-| `standings_rows`      | number (1–30)                                               | 5 or 3                       | Drivers shown in the standings. By default 5 in the week and off-season layouts, 3 otherwise. |
-| `update_interval`     | number (10–3600)                                            | `60`                         | Refresh interval of countdowns and live sessions, in seconds.                                 |
-| `next_race_entity`    | string                                                      | `sensor.f1_next_race`        | Next race sensor.                                                                             |
-| `last_results_entity` | string                                                      | `sensor.f1_last_results`     | Last race results sensor.                                                                     |
-| `standings_entity`    | string                                                      | `sensor.f1_driver_standings` | Driver standings sensor.                                                                      |
-| `schedule_entity`     | string                                                      | `sensor.f1_schedule`         | Season schedule sensor, used by the title fight.                                              |
-| `tap_action`          | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on tap. `more-info` opens the next race sensor.                                        |
-| `hold_action`         | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on long press (500 ms).                                                                |
+| Option                | Type                                                        | Default                      | Description                                                                                          |
+| --------------------- | ----------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `type`                | string                                                      | **required**                 | `custom:formula-one-summary-card`                                                                    |
+| `mode`                | `auto` \| `week` \| `weekend` \| `results` \| `off`         | `auto`                       | Layout. `auto` follows the calendar, the other values force a layout (handy for testing).            |
+| `show_title_fight`    | boolean                                                     | `true`                       | Show the [title fight](#title-fight) block.                                                          |
+| `show_standings`      | boolean                                                     | `true`                       | Show the drivers' championship standings.                                                            |
+| `standings_rows`      | number (1–30)                                               | 5 or 3                       | Drivers shown in the standings. By default 5 in the week and off-season layouts, 3 otherwise.        |
+| `update_interval`     | number (10–3600)                                            | `60`                         | Refresh interval of countdowns and live sessions, in seconds.                                        |
+| `spoiler_protection`  | boolean                                                     | `false`                      | Blur the results after a race until you tap the card. See [Spoiler protection](#spoiler-protection). |
+| `spoiler_hours`       | number (0–168)                                              | `6`                          | Hours after the end of the race after which the results show by themselves.                          |
+| `next_race_entity`    | string                                                      | `sensor.f1_next_race`        | Next race sensor.                                                                                    |
+| `last_results_entity` | string                                                      | `sensor.f1_last_results`     | Last race results sensor.                                                                            |
+| `standings_entity`    | string                                                      | `sensor.f1_driver_standings` | Driver standings sensor.                                                                             |
+| `schedule_entity`     | string                                                      | `sensor.f1_schedule`         | Season schedule sensor, used by the title fight.                                                     |
+| `tap_action`          | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on tap. `more-info` opens the next race sensor.                                               |
+| `hold_action`         | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on long press (500 ms).                                                                       |
 
 An invalid option shows a clear error message in the dashboard instead of the card.
 
@@ -207,6 +213,21 @@ The title fight block uses the **2026 points system**: 25 points for a Grand Pri
 - a **champion** banner, and a 🏆 tag in the header, as soon as the title is mathematically decided.
 
 The tie-break on number of wins is not taken into account: a tie on points is never shown as clinched.
+
+---
+
+## Spoiler protection
+
+Watching the Grand Prix later? With `spoiler_protection: true`, the card hides everything that gives the result away from the start of the race: podium, race highlights, standings and title fight are blurred and lose their team colors, and the "Title decided" tag is hidden. The name and date of the Grand Prix stay visible.
+
+![Results hidden behind a blurred veil, in French](https://raw.githubusercontent.com/HappyManuDev/Formula-one-summary-card/main/docs/images/preview-spoiler.png)
+
+- **Tap the veil** to show the results. The card remembers it for that race, on this browser, and the tap does not trigger the card's `tap_action`.
+- **Or wait**: the results show by themselves `spoiler_hours` after the end of the race, estimated 2 hours after the start (6 hours by default).
+
+The protection also covers the last race of the season, whose champion the off-season layout would otherwise reveal.
+
+To hide the results again on a browser, run `localStorage.removeItem('formula-one-summary-card:revealed')` in its developer console and reload the page.
 
 ---
 

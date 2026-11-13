@@ -32,6 +32,10 @@ describe('resolveConfig', () => {
     [{ standings_rows: 0 }, /"standings_rows"/],
     [{ standings_rows: 2.5 }, /"standings_rows"/],
     [{ update_interval: 5 }, /"update_interval"/],
+    [{ spoiler_protection: 1 }, /"spoiler_protection" must be true or false/],
+    [{ spoiler_hours: -1 }, /"spoiler_hours"/],
+    [{ spoiler_hours: 1.5 }, /"spoiler_hours"/],
+    [{ spoiler_hours: 200 }, /"spoiler_hours"/],
   ])('rejects %o', (config, error) => {
     expect(() => resolve(config)).toThrow(error);
   });

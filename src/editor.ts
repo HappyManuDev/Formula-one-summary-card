@@ -4,8 +4,10 @@ import { property, state } from 'lit/decorators.js';
 import {
   DEFAULT_CONFIG,
   ENTITY_KEYS,
+  MAX_SPOILER_HOURS,
   MAX_STANDINGS_ROWS,
   MAX_UPDATE_INTERVAL,
+  MIN_SPOILER_HOURS,
   MIN_STANDINGS_ROWS,
   MIN_UPDATE_INTERVAL,
   MODES,
@@ -63,6 +65,27 @@ function buildSchema(hass?: HomeAssistant): SchemaItem[] {
           unit_of_measurement: 's',
         },
       },
+    },
+    {
+      name: 'spoilers',
+      type: 'expandable',
+      flatten: true,
+      icon: 'mdi:eye-off-outline',
+      schema: [
+        { name: 'spoiler_protection', selector: { boolean: {} } },
+        {
+          name: 'spoiler_hours',
+          selector: {
+            number: {
+              min: MIN_SPOILER_HOURS,
+              max: MAX_SPOILER_HOURS,
+              step: 1,
+              mode: 'box',
+              unit_of_measurement: 'h',
+            },
+          },
+        },
+      ],
     },
     {
       name: 'entities',

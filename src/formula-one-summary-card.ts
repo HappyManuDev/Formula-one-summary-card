@@ -14,6 +14,7 @@ import './editor';
 import { readF1Data } from './f1/data';
 import { computeMode } from './f1/mode';
 import { upcomingSession, weekendSessions } from './f1/sessions';
+import { spoilerWindow } from './f1/spoiler';
 import { computeTitleFight } from './f1/title-fight';
 import type { HomeAssistant, LovelaceGridOptions } from './ha-types';
 import { localize } from './localize/localize';
@@ -21,10 +22,12 @@ import {
   renderCountdown,
   renderGrandPrix,
   renderHeader,
+  renderLastGrandPrix,
   renderNextRaceFooter,
   renderOffSeason,
   renderResults,
   renderSessions,
+  renderSpoilerShield,
   renderStandings,
   renderTitleFight,
   type RenderContext,
@@ -41,10 +44,23 @@ const DEFAULT_STANDINGS_ROWS: Record<CardMode, number> = {
   off: 5,
 };
 
+/** Race whose results were revealed last, shared by every card of the browser. */
+const REVEALED_KEY = `${CARD_TAG}:revealed`;
+
+function readRevealed(): string | undefined {
+  try {
+    return localStorage.getItem(REVEALED_KEY) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export class FormulaOneSummaryCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ResolvedConfig;
+
+  @state() private _revealed = readRevealed();
 
   private _timer?: ReturnType<typeof setInterval>;
   private _unbindActions?: () => void;
@@ -113,6 +129,15 @@ export class FormulaOneSummaryCard extends LitElement {
     );
   }
 
+  private _reveal(key: string): void {
+    this._revealed = key;
+    try {
+      localStorage.setItem(REVEALED_KEY, key);
+    } catch {
+      // Storage blocked: the results stay revealed until the page reloads.
+    }
+  }
+
   /** `hass` changes on every state change in the house: only re-render when relevant. */
   protected shouldUpdate(changed: PropertyValues<this>): boolean {
     if (!changed.has('hass') || changed.size > 1) {
@@ -151,6 +176,10 @@ export class FormulaOneSummaryCard extends LitElement {
     const data = readF1Data(hass, config);
     const sessions = weekendSessions(data.next);
     const mode = config.mode === 'auto' ? computeMode(data, sessions, now) : config.mode;
+    const spoiler = config.spoiler_protection
+      ? spoilerWindow(data, now, config.spoiler_hours)
+      : undefined;
+    const hidden = !!spoiler && this._revealed !== spoiler.key;
     const ctx: RenderContext = {
       hass,
       now,
@@ -158,30 +187,46 @@ export class FormulaOneSummaryCard extends LitElement {
       mode,
       sessions,
       upcoming: upcomingSession(sessions, now),
-      titleFight: config.show_title_fight ? computeTitleFight(data) : undefined,
+      // While hidden, the title fight is not rendered at all: even blurred, the shape of
+      // the champion banner, and the "Title decided" header tag, would give it away.
+      titleFight: config.show_title_fight && !hidden ? computeTitleFight(data) : undefined,
     };
     const rows = config.standings_rows ?? DEFAULT_STANDINGS_ROWS[mode];
     const standings = config.show_standings ? renderStandings(ctx, rows) : nothing;
     const titleFight = renderTitleFight(ctx);
 
+    // `visible` never gives a result away; `results` is what the spoiler protection hides.
     let round: string | undefined;
-    let body;
+    let visible;
+    let results;
     switch (mode) {
       case 'week':
         round = data.next.round;
-        body = html`${renderGrandPrix(ctx, data.next)}${renderCountdown(ctx)}${titleFight}${standings}`;
+        visible = html`${renderGrandPrix(ctx, data.next)}${renderCountdown(ctx)}`;
+        results = html`${titleFight}${standings}`;
         break;
       case 'weekend':
         round = data.next.round;
-        body = html`${renderGrandPrix(ctx, data.next)}${renderSessions(ctx)}${titleFight}${standings}`;
+        visible = html`${renderGrandPrix(ctx, data.next)}${renderSessions(ctx)}`;
+        results = html`${titleFight}${standings}`;
         break;
       case 'results':
         round = data.last.round;
-        body = html`${renderResults(ctx)}${titleFight}${standings}${renderNextRaceFooter(ctx)}`;
+        visible = renderLastGrandPrix(ctx);
+        results = html`${renderResults(ctx)}${titleFight}${standings}${renderNextRaceFooter(ctx)}`;
         break;
       default:
-        body = html`${renderOffSeason(ctx)}${standings}`;
+        // After the last race of the season, the champion is the spoiler.
+        visible = nothing;
+        results = html`${renderOffSeason(ctx)}${standings}`;
     }
+    const body = spoiler
+      ? html`${visible}${renderSpoilerShield(ctx, results, {
+          hidden,
+          until: spoiler.until,
+          onReveal: () => this._reveal(spoiler.key),
+        })}`
+      : html`${visible}${results}`;
 
     const interactive = hasAction(config.tap_action) || hasAction(config.hold_action);
 

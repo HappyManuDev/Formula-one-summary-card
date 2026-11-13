@@ -175,12 +175,11 @@ function renderStep(result: RaceResult, place: string): TemplateResult {
   `;
 }
 
-export function renderResults(ctx: RenderContext): Block {
-  const { hass, data } = ctx;
-  const last = data.last;
+/** Name and date of the last Grand Prix: no result, so it stays visible behind the spoiler veil. */
+export function renderLastGrandPrix(ctx: RenderContext): TemplateResult {
+  const { hass } = ctx;
+  const last = ctx.data.last;
   const start = sessionDate(last);
-  const results = data.results;
-  const facts = raceFacts(results);
   return html`
     <div class="gp">
       <div class="flag" aria-hidden="true">${countryFlag(last)}</div>
@@ -195,6 +194,15 @@ export function renderResults(ctx: RenderContext): Block {
         </div>
       </div>
     </div>
+  `;
+}
+
+/** Podium and race facts of the last Grand Prix. */
+export function renderResults(ctx: RenderContext): Block {
+  const { hass, data } = ctx;
+  const results = data.results;
+  const facts = raceFacts(results);
+  return html`
     ${
       results.length >= 3
         ? html`<div class="podium">
@@ -236,6 +244,51 @@ export function renderResults(ctx: RenderContext): Block {
           </div>`
         : nothing
     }
+  `;
+}
+
+/**
+ * Blurs `content` while `hidden`, under a veil that reveals it when pressed.
+ * The veil stays in the DOM once revealed so that it fades out.
+ */
+export function renderSpoilerShield(
+  ctx: RenderContext,
+  content: Block,
+  shield: { hidden: boolean; until: Date; onReveal: () => void },
+): TemplateResult {
+  const { hass, now } = ctx;
+  // The card's tap and hold actions listen on the card: the veil keeps its presses to itself.
+  const stop = (event: Event) => event.stopPropagation();
+  return html`
+    <div class="spoiler ${shield.hidden ? 'hidden' : ''}">
+      <div
+        class="spoiler-content"
+        aria-hidden=${shield.hidden ? 'true' : 'false'}
+        ?inert=${shield.hidden}
+      >
+        ${content}
+      </div>
+      <button
+        class="veil"
+        type="button"
+        tabindex=${shield.hidden ? '0' : '-1'}
+        aria-hidden=${shield.hidden ? 'false' : 'true'}
+        @click=${shield.onReveal}
+        @pointerdown=${stop}
+        @pointerup=${stop}
+        @keydown=${stop}
+      >
+        <span class="veil-badge">
+          <span class="veil-flag" aria-hidden="true"></span>
+          <ha-icon class="veil-icon" icon="mdi:eye-off-outline" aria-hidden="true"></ha-icon>
+          <span class="veil-title">${localize(hass, 'spoiler.title')}</span>
+          <span class="veil-action">${localize(hass, 'spoiler.reveal')}</span>
+          <span class="veil-sub"
+            >${localize(hass, 'spoiler.auto', { time: formatCountdown(shield.until, now, hass) })}</span
+          >
+        </span>
+      </button>
+    </div>
   `;
 }
 

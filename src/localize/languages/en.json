@@ -70,6 +70,11 @@
     "last_race": "Last race:",
     "won_by": "won by {name}"
   },
+  "spoiler": {
+    "title": "Results hidden",
+    "reveal": "Tap to show",
+    "auto": "Shown automatically in {time}"
+  },
   "warning": {
     "entity_not_found": "Entity not found: {entity}. Create the F1 sensors first, see the documentation."
   },
@@ -78,13 +83,19 @@
       "label": "Next race sensor",
       "helper": "Jolpica /current/next.json sensor, see the documentation."
     },
-    "last_results_entity": { "label": "Last results sensor" },
-    "standings_entity": { "label": "Driver standings sensor" },
+    "last_results_entity": {
+      "label": "Last results sensor"
+    },
+    "standings_entity": {
+      "label": "Driver standings sensor"
+    },
     "schedule_entity": {
       "label": "Season schedule sensor",
       "helper": "Used to compute the title fight."
     },
-    "entities": { "label": "Sensors" },
+    "entities": {
+      "label": "Sensors"
+    },
     "mode": {
       "label": "Layout",
       "helper": "Automatic follows the calendar. The other choices force a layout, useful to test the card."
@@ -96,8 +107,12 @@
       "results": "Results",
       "off": "Off-season"
     },
-    "show_title_fight": { "label": "Title fight" },
-    "show_standings": { "label": "Championship standings" },
+    "show_title_fight": {
+      "label": "Title fight"
+    },
+    "show_standings": {
+      "label": "Championship standings"
+    },
     "standings_rows": {
       "label": "Drivers in the standings",
       "helper": "Leave empty for automatic (3 or 5 depending on the layout)."
@@ -106,8 +121,25 @@
       "label": "Refresh interval",
       "helper": "How often countdowns and live sessions are refreshed, in seconds."
     },
-    "interactions": { "label": "Interactions" },
-    "tap_action": { "label": "Tap action" },
-    "hold_action": { "label": "Hold action" }
+    "spoilers": {
+      "label": "Spoiler protection"
+    },
+    "spoiler_protection": {
+      "label": "Hide the results after a race",
+      "helper": "Blurs the results, standings and title fight until you tap the card. Handy when you watch the race later."
+    },
+    "spoiler_hours": {
+      "label": "Show the results automatically after",
+      "helper": "Hours after the end of the race (estimated 2 hours after the start)."
+    },
+    "interactions": {
+      "label": "Interactions"
+    },
+    "tap_action": {
+      "label": "Tap action"
+    },
+    "hold_action": {
+      "label": "Hold action"
+    }
   }
 }

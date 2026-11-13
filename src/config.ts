@@ -9,6 +9,9 @@ export const MIN_UPDATE_INTERVAL = 10;
 export const MAX_UPDATE_INTERVAL = 3600;
 export const MIN_STANDINGS_ROWS = 1;
 export const MAX_STANDINGS_ROWS = 30;
+export const MIN_SPOILER_HOURS = 0;
+// One week: past that, the next race weekend has usually started.
+export const MAX_SPOILER_HOURS = 168;
 
 export const DEFAULT_CONFIG: Omit<ResolvedConfig, 'type'> = {
   ...DEFAULT_ENTITIES,
@@ -16,11 +19,13 @@ export const DEFAULT_CONFIG: Omit<ResolvedConfig, 'type'> = {
   show_title_fight: true,
   show_standings: true,
   update_interval: 60,
+  spoiler_protection: false,
+  spoiler_hours: 6,
   tap_action: { action: 'none' },
   hold_action: { action: 'none' },
 };
 
-const BOOLEAN_KEYS = ['show_title_fight', 'show_standings'] as const;
+const BOOLEAN_KEYS = ['show_title_fight', 'show_standings', 'spoiler_protection'] as const;
 
 const isIntegerBetween = (value: unknown, min: number, max: number): boolean =>
   typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max;
@@ -61,6 +66,14 @@ export function resolveConfig(config: FormulaOneSummaryCardConfig): ResolvedConf
   ) {
     throw new Error(
       `"update_interval" must be a number of seconds between ${MIN_UPDATE_INTERVAL} and ${MAX_UPDATE_INTERVAL}`,
+    );
+  }
+  if (
+    config.spoiler_hours !== undefined &&
+    !isIntegerBetween(config.spoiler_hours, MIN_SPOILER_HOURS, MAX_SPOILER_HOURS)
+  ) {
+    throw new Error(
+      `"spoiler_hours" must be a whole number of hours between ${MIN_SPOILER_HOURS} and ${MAX_SPOILER_HOURS}`,
     );
   }
   // An option explicitly set to undefined (e.g. cleared in the editor) keeps its default.

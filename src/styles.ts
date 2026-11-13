@@ -314,6 +314,135 @@ export const cardStyles = css`
     background: rgba(255, 179, 0, 0.14);
   }
 
+  /* Spoiler protection: the results blur and lose their colors (team colors would
+     give the podium away), under a frosted badge that reveals them. */
+  .spoiler {
+    position: relative;
+  }
+
+  .spoiler-content {
+    transition:
+      filter 0.6s ease,
+      opacity 0.6s ease;
+  }
+
+  .spoiler.hidden .spoiler-content {
+    filter: blur(9px) grayscale(1);
+    opacity: 0.55;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .spoiler.hidden {
+    min-height: 150px;
+    margin-top: 8px;
+  }
+
+  .veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--card-background-color, #fff) 55%, transparent),
+      transparent 75%
+    );
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition:
+      opacity 0.4s ease,
+      visibility 0.4s;
+  }
+
+  .spoiler:not(.hidden) .veil {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .veil:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
+
+  .veil-badge {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    overflow: hidden;
+    padding: 18px 22px 12px;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--f1sc-accent) 25%, transparent);
+    background: color-mix(in srgb, var(--card-background-color, #fff) 78%, transparent);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+  }
+
+  .veil:hover .veil-badge {
+    transform: scale(1.03);
+  }
+
+  /* Checkered flag strip along the top of the badge. */
+  .veil-flag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0 / 6px 6px;
+    opacity: 0.85;
+  }
+
+  .veil-icon {
+    --mdc-icon-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--f1sc-accent), var(--f1sc-accent-dark));
+    color: #fff;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--f1sc-accent) 45%, transparent);
+  }
+
+  .veil-title {
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .veil-action {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--f1sc-accent);
+  }
+
+  .veil-sub {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--secondary-text-color);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spoiler-content,
+    .veil,
+    .veil-badge {
+      transition: none;
+    }
+  }
+
   .champion {
     margin-top: 12px;
     padding: 10px 12px;
