@@ -13,6 +13,8 @@ export const cardStyles = css`
     overflow: hidden;
     color: var(--primary-text-color);
     outline: none;
+    /* Themes give ha-card a tall line-height (~1.5); keep the card compact and the same in every theme. */
+    line-height: normal;
   }
 
   ha-card[role='button'] {
