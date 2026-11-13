@@ -2,6 +2,8 @@
 
 Thanks for your interest! Bug reports, translations and features are all welcome.
 
+By participating in this project, you agree to follow its [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Reporting a bug or suggesting a feature
 
 Use the [issue templates](https://github.com/HappyManuDev/Formula-one-summary-card/issues/new/choose). For bugs, the card version (shown in the browser console), your Home Assistant version, your browser and your card YAML help a lot.

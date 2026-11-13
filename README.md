@@ -278,7 +278,7 @@ npm run screenshots  # README images, needs Chrome
 
 ## Contributing
 
-Bug reports, translations and features are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Bug reports, translations and features are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
