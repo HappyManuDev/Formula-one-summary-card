@@ -1,6 +1,6 @@
 {
   "name": "formula-one-summary-card",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Home Assistant Lovelace card summarising the Formula 1 season: next Grand Prix, race weekend schedule, results and title fight.",
   "type": "module",
   "module": "dist/formula-one-summary-card.js",
