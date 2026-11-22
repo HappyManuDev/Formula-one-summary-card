@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.3.0...v0.3.1) (2026-11-22)
+
+
+### Bug Fixes
+
+* center the fastest lap, biggest climb and retirements boxes ([7ffb374](https://github.com/HappyManuDev/Formula-one-summary-card/commit/7ffb374a1739828cc643ae1b39b1ac3165a3ea02))
+
 ## [0.3.0](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.2.0...v0.3.0) (2026-11-22)
 
 
