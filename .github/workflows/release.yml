@@ -27,6 +27,13 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          # Pull requests opened with the default GITHUB_TOKEN do not run CI: GitHub holds
+          # their runs as "action_required" until approved by hand, and marks them failed
+          # when the PR is merged first. A fine-grained token (this repository only;
+          # Contents, Pull requests and Issues: read and write) in the RELEASE_PLEASE_TOKEN
+          # secret opens the release PR as you, so CI and the HACS validation run on it.
+          # Without the secret, the default token is used, as before.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
 
   upload:
     name: Build and attach the card
