@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.2.0...v0.3.0) (2026-11-22)
+
+
+### Features
+
+* fetch the Jolpica API directly, the F1 sensors are now optional ([81c78e2](https://github.com/HappyManuDev/Formula-one-summary-card/commit/81c78e2642d49fa9a8256a30db9e12d5d14c0e3c))
+
 ## [0.2.0](https://github.com/HappyManuDev/Formula-one-summary-card/compare/v0.1.2...v0.2.0) (2026-11-13)
 
 
