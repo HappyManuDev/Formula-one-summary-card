@@ -266,9 +266,11 @@ export const cardStyles = css`
     margin-top: 10px;
   }
 
+  /* Centered, like the podium steps right above them. */
   .fact {
     flex: 1;
     padding: 8px;
+    text-align: center;
     border-radius: 10px;
     background: rgba(127, 127, 127, 0.12);
     font-size: 12px;

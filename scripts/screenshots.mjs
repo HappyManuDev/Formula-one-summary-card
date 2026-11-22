@@ -157,7 +157,12 @@ try {
           last_updated: '',
         });
         const card = document.createElement('formula-one-summary-card');
-        card.setConfig({ type: 'custom:formula-one-summary-card', ...scenario.config });
+        // The fixtures are passed as sensors: the default API source would fetch live data.
+        card.setConfig({
+          type: 'custom:formula-one-summary-card',
+          source: 'sensors',
+          ...scenario.config,
+        });
         card.hass = {
           states: {
             'sensor.f1_next_race': entity('sensor.f1_next_race', scenario.next ?? sensors.next),
