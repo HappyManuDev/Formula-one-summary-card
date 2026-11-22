@@ -76,9 +76,19 @@
     "auto": "Shown automatically in {time}"
   },
   "warning": {
-    "entity_not_found": "Entity not found: {entity}. Create the F1 sensors first, see the documentation."
+    "entity_not_found": "Entity not found: {entity}. Create the F1 sensors first, or set the data source to the Jolpica API.",
+    "api_loading": "Loading Formula 1 data…",
+    "api_error": "Could not reach the Jolpica API. Retrying in a few minutes."
   },
   "editor": {
+    "source": {
+      "label": "Data source",
+      "helper": "The Jolpica API needs no setup. Use sensors if you already have the F1 REST sensors, or need the data in automations."
+    },
+    "source_options": {
+      "api": "Jolpica API (direct)",
+      "sensors": "Home Assistant sensors"
+    },
     "next_race_entity": {
       "label": "Next race sensor",
       "helper": "Jolpica /current/next.json sensor, see the documentation."

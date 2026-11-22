@@ -11,6 +11,7 @@ import {
   EDITOR_TAG,
 } from './const';
 import './editor';
+import { type F1Api, f1Api } from './f1/api';
 import { readF1Data } from './f1/data';
 import { computeMode } from './f1/mode';
 import { upcomingSession, weekendSessions } from './f1/sessions';
@@ -33,6 +34,7 @@ import {
   type RenderContext,
 } from './render/blocks';
 import { cardStyles } from './styles';
+import type { F1Data } from './f1/types';
 import type { CardMode, FormulaOneSummaryCardConfig, ResolvedConfig } from './types';
 import { type ActionKind, bindActions, hasAction } from './utils/actions';
 
@@ -56,6 +58,9 @@ function readRevealed(): string | undefined {
 }
 
 export class FormulaOneSummaryCard extends LitElement {
+  /** Jolpica API store used with `source: api`, shared by every card (replaceable in tests). */
+  public static api: F1Api = f1Api;
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ResolvedConfig;
@@ -64,6 +69,7 @@ export class FormulaOneSummaryCard extends LitElement {
 
   private _timer?: ReturnType<typeof setInterval>;
   private _unbindActions?: () => void;
+  private _unsubscribeApi?: () => void;
 
   public static getStubConfig(): Partial<FormulaOneSummaryCardConfig> {
     return {};
@@ -92,6 +98,9 @@ export class FormulaOneSummaryCard extends LitElement {
     super.connectedCallback();
     this._startTimer();
     this._unbindActions = bindActions(this, (kind) => this._handleAction(kind));
+    this._unsubscribeApi = FormulaOneSummaryCard.api.subscribe(() => {
+      if (this._config?.source === 'api') this.requestUpdate();
+    });
   }
 
   public disconnectedCallback(): void {
@@ -100,13 +109,26 @@ export class FormulaOneSummaryCard extends LitElement {
     this._timer = undefined;
     this._unbindActions?.();
     this._unbindActions = undefined;
+    this._unsubscribeApi?.();
+    this._unsubscribeApi = undefined;
   }
 
-  /** Re-renders periodically so countdowns and live sessions stay current between sensor updates. */
+  /**
+   * Re-renders periodically so countdowns and live sessions stay current between data
+   * updates. With `source: api`, also fetches whatever API data has become stale.
+   */
   private _startTimer(): void {
     clearInterval(this._timer);
     const seconds = this._config?.update_interval ?? 60;
-    this._timer = setInterval(() => this.requestUpdate(), seconds * 1000);
+    this._refreshApi();
+    this._timer = setInterval(() => {
+      this._refreshApi();
+      this.requestUpdate();
+    }, seconds * 1000);
+  }
+
+  private _refreshApi(): void {
+    if (this._config?.source === 'api') FormulaOneSummaryCard.api.refresh();
   }
 
   private _handleAction(kind: ActionKind): void {
@@ -149,7 +171,10 @@ export class FormulaOneSummaryCard extends LitElement {
     }
     const config = this._config;
     return (
-      ENTITY_KEYS.some((key) => previous.states[config[key]] !== this.hass!.states[config[key]]) ||
+      (config.source === 'sensors' &&
+        ENTITY_KEYS.some(
+          (key) => previous.states[config[key]] !== this.hass!.states[config[key]],
+        )) ||
       previous.locale !== this.hass.locale ||
       previous.language !== this.hass.language ||
       previous.config !== this.hass.config
@@ -162,18 +187,21 @@ export class FormulaOneSummaryCard extends LitElement {
     }
     const config = this._config;
     const hass = this.hass;
-    if (!hass.states[config.next_race_entity]) {
-      return html`
-        <ha-card>
-          <div class="warning">
-            ${localize(hass, 'warning.entity_not_found', { entity: config.next_race_entity })}
-          </div>
-        </ha-card>
-      `;
+    let data: F1Data;
+    if (config.source === 'api') {
+      const status = FormulaOneSummaryCard.api.status;
+      if (status !== 'ready') return this._renderWarning(localize(hass, `warning.api_${status}`));
+      data = FormulaOneSummaryCard.api.data;
+    } else {
+      if (!hass.states[config.next_race_entity]) {
+        return this._renderWarning(
+          localize(hass, 'warning.entity_not_found', { entity: config.next_race_entity }),
+        );
+      }
+      data = readF1Data(hass, config);
     }
 
     const now = new Date();
-    const data = readF1Data(hass, config);
     const sessions = weekendSessions(data.next);
     const mode = config.mode === 'auto' ? computeMode(data, sessions, now) : config.mode;
     const spoiler = config.spoiler_protection
@@ -234,6 +262,14 @@ export class FormulaOneSummaryCard extends LitElement {
       <ha-card tabindex=${interactive ? '0' : '-1'} role=${interactive ? 'button' : 'region'}>
         ${renderHeader(ctx, round)}
         <div class="body">${body}</div>
+      </ha-card>
+    `;
+  }
+
+  private _renderWarning(message: string) {
+    return html`
+      <ha-card>
+        <div class="warning">${message}</div>
       </ha-card>
     `;
   }

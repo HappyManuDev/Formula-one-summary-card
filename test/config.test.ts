@@ -12,6 +12,7 @@ describe('resolveConfig', () => {
     expect(resolve({})).toEqual({ type: TYPE, ...DEFAULT_CONFIG });
     expect(resolve({}).next_race_entity).toBe('sensor.f1_next_race');
     expect(resolve({}).mode).toBe('auto');
+    expect(resolve({}).source).toBe('api');
   });
 
   it('keeps user values', () => {
@@ -27,6 +28,7 @@ describe('resolveConfig', () => {
 
   it.each([
     [{ mode: 'race' }, /"mode" must be one of/],
+    [{ source: 'web' }, /"source" must be one of/],
     [{ next_race_entity: 3 }, /"next_race_entity" must be an entity id/],
     [{ show_title_fight: 'yes' }, /"show_title_fight" must be true or false/],
     [{ standings_rows: 0 }, /"standings_rows"/],

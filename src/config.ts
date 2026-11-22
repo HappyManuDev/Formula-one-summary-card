@@ -1,6 +1,7 @@
 import { DEFAULT_ENTITIES } from './const';
-import type { FormulaOneSummaryCardConfig, ModeOption, ResolvedConfig } from './types';
+import type { DataSource, FormulaOneSummaryCardConfig, ModeOption, ResolvedConfig } from './types';
 
+export const SOURCES: readonly DataSource[] = ['api', 'sensors'];
 export const MODES: readonly ModeOption[] = ['auto', 'week', 'weekend', 'results', 'off'];
 export const ENTITY_KEYS = Object.keys(DEFAULT_ENTITIES) as (keyof typeof DEFAULT_ENTITIES)[];
 export const MIN_UPDATE_INTERVAL = 10;
@@ -14,6 +15,7 @@ export const MIN_SPOILER_HOURS = 0;
 export const MAX_SPOILER_HOURS = 168;
 
 export const DEFAULT_CONFIG: Omit<ResolvedConfig, 'type'> = {
+  source: 'api',
   ...DEFAULT_ENTITIES,
   mode: 'auto',
   show_title_fight: true,
@@ -39,6 +41,9 @@ export function resolveConfig(config: FormulaOneSummaryCardConfig): ResolvedConf
     if (config[key] !== undefined && typeof config[key] !== 'string') {
       throw new Error(`"${key}" must be an entity id, e.g. ${DEFAULT_ENTITIES[key]}`);
     }
+  }
+  if (config.source !== undefined && !SOURCES.includes(config.source)) {
+    throw new Error(`"source" must be one of: ${SOURCES.join(', ')}`);
   }
   if (config.mode !== undefined && !MODES.includes(config.mode)) {
     throw new Error(`"mode" must be one of: ${MODES.join(', ')}`);

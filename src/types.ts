@@ -3,8 +3,12 @@ import type { ActionConfig, LovelaceCardConfig } from './ha-types';
 export type CardMode = 'week' | 'weekend' | 'results' | 'off';
 export type ModeOption = 'auto' | CardMode;
 
+/** Where the F1 data comes from: the Jolpica API directly, or Home Assistant REST sensors. */
+export type DataSource = 'api' | 'sensors';
+
 export interface FormulaOneSummaryCardConfig extends LovelaceCardConfig {
   type: string;
+  source?: DataSource;
   next_race_entity?: string;
   last_results_entity?: string;
   standings_entity?: string;
@@ -25,6 +29,7 @@ export type ResolvedConfig = FormulaOneSummaryCardConfig &
   Required<
     Pick<
       FormulaOneSummaryCardConfig,
+      | 'source'
       | 'next_race_entity'
       | 'last_results_entity'
       | 'standings_entity'

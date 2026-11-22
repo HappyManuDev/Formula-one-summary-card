@@ -21,10 +21,21 @@ const arrayOf = <T>(value: unknown, keep: (item: unknown) => boolean): T[] =>
 
 /** Reads the four F1 sensors. Missing or malformed data gives empty values, never an error. */
 export function readF1Data(hass: HomeAssistant, config: ResolvedConfig): F1Data {
-  const next = attributes<Race>(hass, config.next_race_entity);
-  const last = attributes<LastRace>(hass, config.last_results_entity);
-  const standings = attributes<Standings>(hass, config.standings_entity);
-  const schedule = attributes<Schedule>(hass, config.schedule_entity);
+  return buildF1Data(
+    attributes<Race>(hass, config.next_race_entity),
+    attributes<LastRace>(hass, config.last_results_entity),
+    attributes<Standings>(hass, config.standings_entity),
+    attributes<Schedule>(hass, config.schedule_entity),
+  );
+}
+
+/** Card data from the four Jolpica objects (sensor attributes or API answers). */
+export function buildF1Data(
+  next: Race = {},
+  last: LastRace = {},
+  standings: Standings = {},
+  schedule: Schedule = {},
+): F1Data {
   return {
     next,
     last,

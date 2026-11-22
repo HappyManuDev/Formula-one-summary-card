@@ -22,8 +22,9 @@ A [Home Assistant](https://www.home-assistant.io/) Lovelace card that summarises
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
-  - [1. Create the F1 sensors](#1-create-the-f1-sensors)
-  - [2. Install the card](#2-install-the-card)
+- [Data source](#data-source)
+  - [Jolpica API (default)](#jolpica-api-default)
+  - [Home Assistant sensors (optional)](#home-assistant-sensors-optional)
 - [Configuration](#configuration)
 - [Layouts](#layouts)
 - [Title fight](#title-fight)
@@ -50,22 +51,64 @@ A [Home Assistant](https://www.home-assistant.io/) Lovelace card that summarises
 - 🕐 **Respects your profile**: dates and times follow your Home Assistant language, 12 h / 24 h clock and time zone.
 - 🌍 **Localized**: English and French.
 - 🖱️ **Visual editor**: every option can be set without writing YAML.
-- ⚡ **Lightweight**: about 19 kB gzipped, re-renders only when the F1 sensors change.
+- 🔌 **No setup**: the card fetches the free [Jolpica F1 API](https://github.com/jolpica/jolpica-f1) by itself, more often on race weekends. No sensor, no `configuration.yaml`, no API key.
+- ⚡ **Lightweight**: about 20 kB gzipped, and only a few API requests per day outside race weekends.
 
 ---
 
 ## Requirements
 
 - Home Assistant **2024.8** or newer.
-- The four F1 REST sensors described below. They use the free [Jolpica F1 API](https://github.com/jolpica/jolpica-f1), no account or API key needed.
+- A browser with Internet access, to reach `api.jolpi.ca`. Or, if you prefer, the [Home Assistant sensors](#home-assistant-sensors-optional).
 
 ---
 
 ## Installation
 
-### 1. Create the F1 sensors
+### HACS (recommended)
 
-The card reads its data from four [RESTful sensors](https://www.home-assistant.io/integrations/sensor.rest/). Home Assistant fetches the API every few hours and every dashboard shares the result.
+1. Open **HACS** in Home Assistant.
+2. Click the **⋮** menu (top right) → **Custom repositories**.
+3. Repository: `https://github.com/HappyManuDev/Formula-one-summary-card`. Type: **Dashboard**. Click **Add**.
+4. Search for **Formula One Summary Card** in HACS, open it and click **Download**.
+5. **Reload your browser** (clear the cache if needed).
+
+### Manual
+
+1. Download `formula-one-summary-card.js` from the [latest release](https://github.com/HappyManuDev/Formula-one-summary-card/releases/latest).
+2. Copy it to `<config>/www/formula-one-summary-card.js`.
+3. Add the resource in **Settings → Dashboards → ⋮ → Resources → Add resource**. URL: `/local/formula-one-summary-card.js`. Type: **JavaScript module**.
+4. Reload your browser.
+
+To check that the card is loaded, open the browser console: a `FORMULA ONE SUMMARY CARD vX.Y.Z` banner is printed.
+
+Then add the card to a dashboard: that's it.
+
+---
+
+## Data source
+
+### Jolpica API (default)
+
+By default (`source: api`), the card fetches the [Jolpica F1 API](https://github.com/jolpica/jolpica-f1) straight from your browser. Nothing to set up.
+
+The answers are cached in the browser (`localStorage`): every card and every tab of the same browser share them, and a reload does not query the API again. How often the data is refreshed follows the calendar:
+
+| When                                                                                   | Refresh           |
+| -------------------------------------------------------------------------------------- | ----------------- |
+| Between race weekends                                                                  | every 3 hours     |
+| Race weekend, from 24 hours before the first session                                   | every 30 minutes  |
+| After the sprint (up to 2 h) or the race (up to 12 h), until the results are published | every 5 minutes   |
+| Season calendar (only used for the title fight)                                        | every 12 hours    |
+| After a failed request                                                                 | retry after 5 min |
+
+Countdowns and live sessions do not depend on these refreshes: the card computes them from the session times every minute (`update_interval`). Practice and qualifying results are not shown by the card, so they are not awaited.
+
+That is a few requests per day and per browser, far below the Jolpica limit of about 500 requests per hour. If the API cannot be reached, the card keeps showing the last data it received.
+
+### Home Assistant sensors (optional)
+
+Prefer that Home Assistant fetches the data, once for every dashboard? Or need the F1 data in automations? Create four [RESTful sensors](https://www.home-assistant.io/integrations/sensor.rest/) and set `source: sensors`:
 
 1. Copy [`examples/f1-sensors.yaml`](examples/f1-sensors.yaml) into a [package](https://www.home-assistant.io/docs/configuration/packages/), or paste its `rest:` block into `configuration.yaml`.
 2. Restart Home Assistant.
@@ -112,25 +155,6 @@ automation:
 
 You can of course set any `scan_interval` you like; the card works the same.
 
-### 2. Install the card
-
-#### HACS (recommended)
-
-1. Open **HACS** in Home Assistant.
-2. Click the **⋮** menu (top right) → **Custom repositories**.
-3. Repository: `https://github.com/HappyManuDev/Formula-one-summary-card`. Type: **Dashboard**. Click **Add**.
-4. Search for **Formula One Summary Card** in HACS, open it and click **Download**.
-5. **Reload your browser** (clear the cache if needed).
-
-#### Manual
-
-1. Download `formula-one-summary-card.js` from the [latest release](https://github.com/HappyManuDev/Formula-one-summary-card/releases/latest).
-2. Copy it to `<config>/www/formula-one-summary-card.js`.
-3. Add the resource in **Settings → Dashboards → ⋮ → Resources → Add resource**. URL: `/local/formula-one-summary-card.js`. Type: **JavaScript module**.
-4. Reload your browser.
-
-To check that the card is loaded, open the browser console: a `FORMULA ONE SUMMARY CARD vX.Y.Z` banner is printed.
-
 ---
 
 ## Configuration
@@ -143,12 +167,13 @@ Edit a dashboard, click **Add card** and search for **Formula One Summary Card**
 type: custom:formula-one-summary-card
 ```
 
-With the sensors of the example file, nothing else is needed.
+Nothing else is needed: the card fetches the Jolpica API by itself.
 
 ### Full example
 
 ```yaml
 type: custom:formula-one-summary-card
+source: sensors
 mode: auto
 show_title_fight: true
 show_standings: true
@@ -167,22 +192,23 @@ tap_action:
 
 ### Options
 
-| Option                | Type                                                        | Default                      | Description                                                                                          |
-| --------------------- | ----------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `type`                | string                                                      | **required**                 | `custom:formula-one-summary-card`                                                                    |
-| `mode`                | `auto` \| `week` \| `weekend` \| `results` \| `off`         | `auto`                       | Layout. `auto` follows the calendar, the other values force a layout (handy for testing).            |
-| `show_title_fight`    | boolean                                                     | `true`                       | Show the [title fight](#title-fight) block.                                                          |
-| `show_standings`      | boolean                                                     | `true`                       | Show the drivers' championship standings.                                                            |
-| `standings_rows`      | number (1–30)                                               | 5 or 3                       | Drivers shown in the standings. By default 5 in the week and off-season layouts, 3 otherwise.        |
-| `update_interval`     | number (10–3600)                                            | `60`                         | Refresh interval of countdowns and live sessions, in seconds.                                        |
-| `spoiler_protection`  | boolean                                                     | `false`                      | Blur the results after a race until you tap the card. See [Spoiler protection](#spoiler-protection). |
-| `spoiler_hours`       | number (0–168)                                              | `6`                          | Hours after the end of the race after which the results show by themselves.                          |
-| `next_race_entity`    | string                                                      | `sensor.f1_next_race`        | Next race sensor.                                                                                    |
-| `last_results_entity` | string                                                      | `sensor.f1_last_results`     | Last race results sensor.                                                                            |
-| `standings_entity`    | string                                                      | `sensor.f1_driver_standings` | Driver standings sensor.                                                                             |
-| `schedule_entity`     | string                                                      | `sensor.f1_schedule`         | Season schedule sensor, used by the title fight.                                                     |
-| `tap_action`          | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on tap. `more-info` opens the next race sensor.                                               |
-| `hold_action`         | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on long press (500 ms).                                                                       |
+| Option                | Type                                                        | Default                      | Description                                                                                                 |
+| --------------------- | ----------------------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `type`                | string                                                      | **required**                 | `custom:formula-one-summary-card`                                                                           |
+| `source`              | `api` \| `sensors`                                          | `api`                        | Where the data comes from. See [Data source](#data-source). The `*_entity` options only apply to `sensors`. |
+| `mode`                | `auto` \| `week` \| `weekend` \| `results` \| `off`         | `auto`                       | Layout. `auto` follows the calendar, the other values force a layout (handy for testing).                   |
+| `show_title_fight`    | boolean                                                     | `true`                       | Show the [title fight](#title-fight) block.                                                                 |
+| `show_standings`      | boolean                                                     | `true`                       | Show the drivers' championship standings.                                                                   |
+| `standings_rows`      | number (1–30)                                               | 5 or 3                       | Drivers shown in the standings. By default 5 in the week and off-season layouts, 3 otherwise.               |
+| `update_interval`     | number (10–3600)                                            | `60`                         | Refresh interval of countdowns and live sessions, in seconds.                                               |
+| `spoiler_protection`  | boolean                                                     | `false`                      | Blur the results after a race until you tap the card. See [Spoiler protection](#spoiler-protection).        |
+| `spoiler_hours`       | number (0–168)                                              | `6`                          | Hours after the end of the race after which the results show by themselves.                                 |
+| `next_race_entity`    | string                                                      | `sensor.f1_next_race`        | Next race sensor.                                                                                           |
+| `last_results_entity` | string                                                      | `sensor.f1_last_results`     | Last race results sensor.                                                                                   |
+| `standings_entity`    | string                                                      | `sensor.f1_driver_standings` | Driver standings sensor.                                                                                    |
+| `schedule_entity`     | string                                                      | `sensor.f1_schedule`         | Season schedule sensor, used by the title fight.                                                            |
+| `tap_action`          | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on tap. `more-info` opens the next race sensor.                                                      |
+| `hold_action`         | [action](https://www.home-assistant.io/dashboards/actions/) | `action: none`               | Action on long press (500 ms).                                                                              |
 
 An invalid option shows a clear error message in the dashboard instead of the card.
 
@@ -190,7 +216,7 @@ An invalid option shows a clear error message in the dashboard instead of the ca
 
 ## Layouts
 
-With `mode: auto`, the card picks its layout from the sensors:
+With `mode: auto`, the card picks its layout from the race calendar:
 
 | Layout              | When                                                  | Content                                                               |
 | ------------------- | ----------------------------------------------------- | --------------------------------------------------------------------- |
@@ -266,11 +292,13 @@ Race and circuit names come from the API, in English. To add a language, see [CO
 
 ## Troubleshooting / FAQ
 
-**"Entity not found: sensor.f1_next_race"**: the sensors are missing. Follow [Create the F1 sensors](#1-create-the-f1-sensors), or set the `*_entity` options if your sensors have other names.
+**"Entity not found: sensor.f1_next_race"**: with `source: sensors`, the sensors are missing. Create them as described in [Home Assistant sensors](#home-assistant-sensors-optional), set the `*_entity` options if your sensors have other names, or remove `source: sensors` to use the API directly.
+
+**"Could not reach the Jolpica API"**: the browser could not reach `api.jolpi.ca` (no Internet access, firewall, ad blocker, or the API is down). The card retries every 5 minutes. Details are in the browser console.
 
 **The flags show as two letters (US, BR…)**: Windows does not include flag emojis. This is a limitation of the operating system, not of the card.
 
-**The data is late after a race**: the sensors refresh every 6 hours, and Jolpica publishes the results a little while after the race. You can refresh a sensor right away with the `homeassistant.update_entity` action, or automate it, see [Refresh intervals](#refresh-intervals).
+**The data is late after a race**: Jolpica publishes the results a little while after the race. With the API source, the card checks every 5 minutes after the race. With sensors, they refresh every 6 hours: refresh them right away with the `homeassistant.update_entity` action, or automate it, see [Refresh intervals](#refresh-intervals).
 
 **A session is shown at the wrong time**: times are converted to the time zone of your Home Assistant profile (**Profile → Time zone**: browser or server).
 

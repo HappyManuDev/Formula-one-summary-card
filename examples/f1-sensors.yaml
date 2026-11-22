@@ -1,5 +1,9 @@
 # Formula 1 sensors for the Formula One Summary Card.
 #
+# OPTIONAL: by default the card fetches the Jolpica API by itself. Only use these
+# sensors with `source: sensors` on the card, for example to use the F1 data in
+# automations, or to fetch it once in Home Assistant for every dashboard.
+#
 # Data comes from the free Jolpica API (https://github.com/jolpica/jolpica-f1),
 # the successor of the Ergast API, free and limited to about 500 requests per hour.
 #

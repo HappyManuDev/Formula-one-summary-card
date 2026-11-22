@@ -76,9 +76,19 @@
     "auto": "Affichés automatiquement dans {time}"
   },
   "warning": {
-    "entity_not_found": "Entité introuvable : {entity}. Crée d'abord les capteurs F1, voir la documentation."
+    "entity_not_found": "Entité introuvable : {entity}. Crée d'abord les capteurs F1, ou choisis l'API Jolpica comme source de données.",
+    "api_loading": "Chargement des données de Formule 1…",
+    "api_error": "Impossible de joindre l'API Jolpica. Nouvel essai dans quelques minutes."
   },
   "editor": {
+    "source": {
+      "label": "Source des données",
+      "helper": "L'API Jolpica ne demande aucune configuration. Choisis les capteurs si tu as déjà les capteurs REST F1, ou si tu as besoin des données dans des automatisations."
+    },
+    "source_options": {
+      "api": "API Jolpica (directe)",
+      "sensors": "Capteurs Home Assistant"
+    },
     "next_race_entity": {
       "label": "Capteur prochaine course",
       "helper": "Capteur Jolpica /current/next.json, voir la documentation."

@@ -16,7 +16,7 @@ async function renderCard(
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(now);
   const card = document.createElement(CARD_TAG) as FormulaOneSummaryCard;
-  card.setConfig({ type: `custom:${CARD_TAG}`, ...config });
+  card.setConfig({ type: `custom:${CARD_TAG}`, source: 'sensors', ...config });
   card.hass = hass;
   document.body.appendChild(card);
   await card.updateComplete;

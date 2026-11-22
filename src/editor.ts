@@ -11,11 +11,12 @@ import {
   MIN_STANDINGS_ROWS,
   MIN_UPDATE_INTERVAL,
   MODES,
+  SOURCES,
 } from './config';
 import { EDITOR_TAG } from './const';
 import type { HomeAssistant } from './ha-types';
 import { localize } from './localize/localize';
-import type { FormulaOneSummaryCardConfig } from './types';
+import type { DataSource, FormulaOneSummaryCardConfig } from './types';
 
 interface SchemaItem {
   name: string;
@@ -26,8 +27,20 @@ interface SchemaItem {
   schema?: SchemaItem[];
 }
 
-function buildSchema(hass?: HomeAssistant): SchemaItem[] {
+function buildSchema(hass: HomeAssistant | undefined, source: DataSource): SchemaItem[] {
   return [
+    {
+      name: 'source',
+      selector: {
+        select: {
+          mode: 'dropdown',
+          options: SOURCES.map((value) => ({
+            value,
+            label: localize(hass, `editor.source_options.${value}`),
+          })),
+        },
+      },
+    },
     {
       name: 'mode',
       selector: {
@@ -87,16 +100,21 @@ function buildSchema(hass?: HomeAssistant): SchemaItem[] {
         },
       ],
     },
-    {
-      name: 'entities',
-      type: 'expandable',
-      flatten: true,
-      icon: 'mdi:database',
-      schema: ENTITY_KEYS.map((key) => ({
-        name: key,
-        selector: { entity: { filter: { domain: 'sensor' } } },
-      })),
-    },
+    // The sensors are only read with `source: sensors`.
+    ...(source === 'sensors'
+      ? [
+          {
+            name: 'entities',
+            type: 'expandable' as const,
+            flatten: true,
+            icon: 'mdi:database',
+            schema: ENTITY_KEYS.map((key) => ({
+              name: key,
+              selector: { entity: { filter: { domain: 'sensor' } } },
+            })),
+          },
+        ]
+      : []),
     {
       name: 'interactions',
       type: 'expandable',
@@ -172,7 +190,7 @@ export class FormulaOneSummaryCardEditor extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${buildSchema(this.hass)}
+        .schema=${buildSchema(this.hass, this._config.source ?? 'api')}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
