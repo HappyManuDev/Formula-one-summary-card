@@ -1,8 +1,10 @@
 name: Release
 
 # release-please keeps a "chore: release x.y.z" pull request up to date from the
-# Conventional Commits on main. Merging it creates the tag and the GitHub release,
-# then this workflow builds the card and attaches formula-one-summary-card.js for HACS.
+# Conventional Commits on main. Merging it creates the tag and a *draft* GitHub release,
+# then this workflow builds the card, attaches formula-one-summary-card.js and publishes the
+# release. The Marketplace and the HACS validation never see a published release
+# without its card file.
 
 on:
   push:
@@ -50,7 +52,16 @@ jobs:
       - run: npm test
       - run: npm run build
 
-      - name: Attach formula-one-summary-card.js to the release
+      - name: Attach formula-one-summary-card.js to the draft release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ needs.release-please.outputs.tag_name }}" dist/formula-one-summary-card.js --clobber
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: gh release upload "$TAG" dist/formula-one-summary-card.js --clobber
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: gh release edit "$TAG" --draft=false --latest
